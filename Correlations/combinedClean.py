@@ -1,11 +1,11 @@
 import pandas as pd
 from datetime import datetime
 
-cdcPath = "H:/School/SPRING 2022/CLASSES/CSCI 4341/project/cdc/cdcUS.csv"
+cdcPath = "./data/cdc/cdcUS.csv"
 
-googleTrendsPath = "H:/School/SPRING 2022/CLASSES/CSCI 4341/project/google/googleTrendsClean.csv"
+googleTrendsPath = "./data/google/googleTrendsClean.csv"
 
-combinedPath = "H:/School/SPRING 2022/CLASSES/CSCI 4341/project/cdcGoogleTrendsCombined.csv"
+combinedPath = "./data/cdcGoogleTrendsCombined.csv"
 
 
 def dateToList(date, isGoogle):
@@ -60,6 +60,10 @@ if __name__ == '__main__':
 
     # delete the rows with "x" in the googleTrendsData cdcValue column
     googleTrendsData = googleTrendsData[googleTrendsData["cdcValue"] != "x"]
+
+    # change the depression column label to "googleTrendsValue"
+    googleTrendsData = googleTrendsData.rename(
+        columns={"depression": "googleTrendsValue"})
 
     # write the googleTrendsData to a csv
     googleTrendsData.to_csv(combinedPath, index=False)

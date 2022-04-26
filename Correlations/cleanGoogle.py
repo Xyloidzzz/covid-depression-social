@@ -1,8 +1,8 @@
 # clean up google trends data
 
-original = "H:/School/SPRING 2022/CLASSES/CSCI 4341/project/google/multiTimeline.csv"
+original = "./data/google/multiTimeline.csv"
 
-cleanPath = "H:/School/SPRING 2022/CLASSES/CSCI 4341/project/google/googleTrendsClean.csv"
+cleanPath = "./data/google/googleTrendsClean.csv"
 
 # open origin file
 with open(original, "r") as f:
