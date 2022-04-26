@@ -1,8 +1,8 @@
 # clean up google trends data
 
-original = "./data/google/multiTimeline.csv"
+original = "./data/google/google_trends_covid.csv"
 
-cleanPath = "./data/google/googleTrendsClean.csv"
+cleanPath = "./data/google/google_trends_covid_CLEAN.csv"
 
 # open origin file
 with open(original, "r") as f:
@@ -12,10 +12,11 @@ with open(original, "r") as f:
     lines = data.split("\n")
     # remove the first 2 lines
     lines = lines[2:]
-    # change the depression: (United States) to depression
+    # change the covid: (United States) to covid
     for i in range(len(lines)):
         lines[i] = lines[i].replace(": (United States)", "")
         lines[i] = lines[i].replace("Week", "week")
+        lines[i] = lines[i].replace("<1", "1")
     # write to new file
     with open(cleanPath, "w") as f:
         # write the lines to the file

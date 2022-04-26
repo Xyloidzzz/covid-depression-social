@@ -1,11 +1,11 @@
 import pandas as pd
 from datetime import datetime
 
-cdcPath = "./data/cdc/cdcUS.csv"
+cdcPath = "./data/cdc/cdc_US_anxiety_clean.csv"
 
-googleTrendsPath = "./data/google/googleTrendsClean.csv"
+googleTrendsPath = "./data/google/google_trends_covid_CLEAN.csv"
 
-combinedPath = "./data/cdcGoogleTrendsCombined.csv"
+combinedPath = "./data/cdcAnxiety_googleCovid_COMBINED.csv"
 
 
 def dateToList(date, isGoogle):
@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
     # change the depression column label to "googleTrendsValue"
     googleTrendsData = googleTrendsData.rename(
-        columns={"depression": "googleTrendsValue"})
+        columns={"covid": "googleTrendsCovidValue"})
 
     # write the googleTrendsData to a csv
     googleTrendsData.to_csv(combinedPath, index=False)
