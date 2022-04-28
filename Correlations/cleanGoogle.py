@@ -1,8 +1,10 @@
 # clean up google trends data
 
-original = "./data/google/google_trends_covid.csv"
+# original = "./data/google/google_trends_covid.csv"
+original = "./data/google/google_trends_anxiety.csv"
 
-cleanPath = "./data/google/google_trends_covid_CLEAN.csv"
+# cleanPath = "./data/google/google_trends_covid_CLEAN.csv"
+cleanPath = "./data/google/google_trends_anxiety_CLEAN.csv"
 
 # open origin file
 with open(original, "r") as f:

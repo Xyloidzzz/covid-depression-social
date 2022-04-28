@@ -4,8 +4,10 @@ from datetime import datetime
 cdcPath = "./data/cdc/cdc_US_anxiety_clean.csv"
 
 googleTrendsPath = "./data/google/google_trends_covid_CLEAN.csv"
+googleTrendsAnxietyPath = "./data/google/google_trends_anxiety_CLEAN.csv"
 
-combinedPath = "./data/cdcAnxiety_googleCovid_COMBINED.csv"
+combinedPath = "./data/cdcAnxietyUS_googleCovid_googleAnxiety_COMBINED.csv"
+# combinedPath = "./data/cdcAnxietyUS_googleAnxiety_COMBINED.csv"
 
 
 def dateToList(date, isGoogle):
@@ -38,6 +40,10 @@ if __name__ == '__main__':
     # DataFrame of cdc and google trends data
     cdcData = pd.read_csv(cdcPath)
     googleTrendsData = pd.read_csv(googleTrendsPath)
+    googleTrendsAnxietyData = pd.read_csv(googleTrendsAnxietyPath)
+
+    # combine googleTrendsAnxietyData["anxiety"] into googleTrendsData based on week
+    googleTrendsData["anxiety"] = googleTrendsAnxietyData["anxiety"]
 
     # take googleTrendsData week coulumn and make sure its within the cdc data Time Period Start and End columns
     # if they are within, take the cdc data column value of that range and add it to a new googleTrendsData column
@@ -63,7 +69,7 @@ if __name__ == '__main__':
 
     # change the depression column label to "googleTrendsValue"
     googleTrendsData = googleTrendsData.rename(
-        columns={"covid": "googleTrendsCovidValue"})
+        columns={"covid": "googleTrendsCovidValue", "anxiety": "googleTrendsAnxietyValue"})
 
     # write the googleTrendsData to a csv
     googleTrendsData.to_csv(combinedPath, index=False)
