@@ -114,6 +114,7 @@ def display_correlation_chart(correlation_ticker):
     covidVSanxiety = px.scatter(
         data, x="googleTrendsAnxietyValue", y="googleTrendsCovidValue",
         trendline="ols",
+        trendline_color_override="red",
         hover_name="week",
         hover_data=["googleTrendsCovidValue",
                     "googleTrendsAnxietyValue", "cdcValue"],
@@ -130,6 +131,7 @@ def display_correlation_chart(correlation_ticker):
     cdcVScovid = px.scatter(
         data, x="googleTrendsCovidValue", y="cdcValue",
         trendline="ols",
+        trendline_color_override="red",
         hover_name="week",
         hover_data=["googleTrendsCovidValue",
                     "googleTrendsAnxietyValue", "cdcValue"],
@@ -146,6 +148,7 @@ def display_correlation_chart(correlation_ticker):
     cdcVSanxiety = px.scatter(
         data, x="googleTrendsAnxietyValue", y="cdcValue",
         trendline="ols",
+        trendline_color_override="red",
         hover_name="week",
         hover_data=["googleTrendsCovidValue",
                     "googleTrendsAnxietyValue", "cdcValue"],
