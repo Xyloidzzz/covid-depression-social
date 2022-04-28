@@ -39,7 +39,7 @@ app.layout = html.Div([
     ),
     html.H2('Correlation between Covid Panic and Google Trends'),
     html.P(id="correlation-info",
-           style={'fontSize': '20px', 'font-weight': 'bold'}),
+           style={'fontSize': '25px', 'font-weight': 'bold'}),
     dcc.Graph(id="correlation-chart",
               style={'height': '650px', 'width': '100%'}),
     html.P("Select Graph:"),
@@ -179,11 +179,11 @@ def display_correlation_info(correlation_ticker):
 
     # case switch for correlation-ticker values
     if correlation_ticker == "Google Trends Covid VS Google Trends Anxiety":
-        return "Correlation: " + str(format(covidVSanxiety[0], '.6f')) + "; " + "P-value: " + str(format(covidVSanxiety[1], '.6f'))
+        return "Correlation: " + str(format(covidVSanxiety[0], '.6f')) + "... " + "P-value: " + str(format(covidVSanxiety[1], '.6f'))
     elif correlation_ticker == "CDC VS Google Trends Covid":
-        return "Correlation: " + str(format(cdcVScovid[0], '.6f')) + "; " + "P-value: " + str(format(cdcVScovid[1], '.6f'))
+        return "Correlation: " + str(format(cdcVScovid[0], '.6f')) + "... " + "P-value: " + str(format(cdcVScovid[1], '.6f'))
     elif correlation_ticker == "CDC VS Google Trends Anxiety":
-        return "Correlation: " + str(format(cdcVSanxiety[0], '.6f')) + "; " + "P-value: " + str(format(cdcVSanxiety[1], '.6f'))
+        return "Correlation: " + str(format(cdcVSanxiety[0], '.6f')) + "... " + "P-value: " + str(format(cdcVSanxiety[1], '.6f'))
 
 
 app.run_server(debug=True)
