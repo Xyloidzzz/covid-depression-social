@@ -43,21 +43,25 @@ app.layout = html.Div([
     dcc.Graph(id="correlation-chart",
               style={'height': '650px', 'width': '100%'}),
     html.P("Select Graph:"),
-    dcc.Dropdown(
-        id="correlation-ticker1",
-        options=["CDC", "Google Trends Covid",
-                 "Google Trends Anxiety"],
-        value="CDC",
-        clearable=False,
-    ),
-    html.P("VS"),
-    dcc.Dropdown(
-        id="correlation-ticker2",
-        options=["CDC", "Google Trends Covid",
-                 "Google Trends Anxiety"],
-        value="Google Trends Covid",
-        clearable=False,
-    ),
+    html.Div([
+        dcc.Dropdown(
+            id="correlation-ticker1",
+            options=["CDC", "Google Trends Covid",
+                     "Google Trends Anxiety"],
+            value="CDC",
+            clearable=False,
+            style={'width': '100%', 'padding-right': '10px'}
+        ),
+        html.P("VS"),
+        dcc.Dropdown(
+            id="correlation-ticker2",
+            options=["CDC", "Google Trends Covid",
+                     "Google Trends Anxiety"],
+            value="Google Trends Covid",
+            clearable=False,
+            style={'width': '100%', 'padding-left': '10px'}
+        ),
+    ], style={'display': 'flex', 'flex-direction': 'row', 'width': 'full', 'justify-content': 'center'}),
 ])
 
 
@@ -144,40 +148,6 @@ def display_correlation_chart(correlation_ticker1, correlation_ticker2):
         title_text=xTitle + " VS " + yTitle)
     fig.update_xaxes(title_text=xTitle)
     fig.update_yaxes(title_text=yTitle)
-
-    # CDC VS Google Trends Covid
-    cdcVScovid = px.scatter(
-        data, x="googleTrendsCovidValue", y="cdcValue",
-        trendline="ols",
-        trendline_color_override="red",
-        hover_name="week",
-        hover_data=["googleTrendsCovidValue",
-                    "googleTrendsAnxietyValue", "cdcValue"],
-        size_max=20,
-        labels={"googleTrendsCovidValue": "Google Trends Covid",
-                "cdcValue": "CDC"},
-        title="CDC VS Google Trends Covid",)
-    cdcVScovid.update_layout(
-        title_text='CDC VS Google Trends Covid')
-    cdcVScovid.update_xaxes(title_text='Google Trends Covid')
-    cdcVScovid.update_yaxes(title_text='CDC')
-
-    # CDC VS Google Trends Anxiety
-    cdcVSanxiety = px.scatter(
-        data, x="googleTrendsAnxietyValue", y="cdcValue",
-        trendline="ols",
-        trendline_color_override="red",
-        hover_name="week",
-        hover_data=["googleTrendsCovidValue",
-                    "googleTrendsAnxietyValue", "cdcValue"],
-        size_max=20,
-        labels={"googleTrendsAnxietyValue": "Google Trends Anxiety",
-                "cdcValue": "CDC"},
-        title="CDC VS Google Trends Anxiety",)
-    cdcVSanxiety.update_layout(
-        title_text='CDC VS Google Trends Anxiety')
-    cdcVSanxiety.update_xaxes(title_text='Google Trends Anxiety')
-    cdcVSanxiety.update_yaxes(title_text='CDC')
 
     return fig
 
