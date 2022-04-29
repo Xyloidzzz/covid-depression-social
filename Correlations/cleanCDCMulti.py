@@ -8,7 +8,7 @@ seperate = "./data/cdc/seperate-anxiety/"
 allPath = "./data/cdc/CDCAnxiety_CLEAN.csv"
 
 names = ["National Estimate", "By Age", "By Sex",
-         "By Race", "By Education", "By State"]
+         "By Race/Hispanic ethnicity", "By Education", "By State"]
 
 df = pd.read_csv(original)
 
@@ -26,6 +26,10 @@ df = df.replace(r"\(.*\)", "", regex=True)
 
 # loop through all the names
 for name in names:
-    temp = df[df["Group"] == name]
-    temp.to_csv(seperate+"CDCAnxiety_" +
-                re.sub(r"\s+", "", name)+".csv", index=False)
+    if name == "By Race/Hispanic ethnicity":
+        temp = df[df["Group"] == name]
+        temp.to_csv(seperate+"CDCAnxiety_ByRace.csv", index=False)
+    else:
+        temp = df[df["Group"] == name]
+        temp.to_csv(seperate+"CDCAnxiety_" +
+                    re.sub(r"\s+", "", name)+".csv", index=False)
