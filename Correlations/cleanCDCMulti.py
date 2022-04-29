@@ -3,7 +3,7 @@ import pandas as pd
 
 original = "./data/cdc/Indicators_of_Anxiety_or_Depression_Based_on_Reported_Frequency_of_Symptoms_During_Last_7_Days.csv"
 
-seperate = "./data/cdc/seperate/"
+seperate = "./data/cdc/seperate-anxiety/"
 
 allPath = "./data/cdc/CDCAnxiety_CLEAN.csv"
 
