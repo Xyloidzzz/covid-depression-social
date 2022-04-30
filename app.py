@@ -1,4 +1,5 @@
 import re
+from turtle import color, fillcolor
 from dash import Dash, dcc, html, Input, Output
 import plotly.graph_objects as go
 import plotly.express as px
@@ -101,6 +102,11 @@ cdcDepressionState = cdcDepressionState / cdcDepressionState.max()
 app = Dash(__name__)
 server = app.server
 app.title = "Group 2: CDC Anxiety and Depression"
+
+# TODO
+# Age Group Bar Graphs
+# Education Bar Graph
+# Map of State Data with Time Slider
 
 app.layout = html.Div([
     html.H1('Covid Anxiety & Depression Analysis'),
@@ -250,7 +256,157 @@ app.layout = html.Div([
             style={'width': '100%', 'padding-left': '10px'}
         ),
     ], style={'display': 'flex', 'flex-direction': 'row', 'width': 'full', 'justify-content': 'center'}),
+    dcc.Graph(id="spider-chart",
+              style={'height': '650px', 'width': '100%'}),
+    html.P("Select Graph:"),
+    dcc.Dropdown(
+        id="spiderTicker",
+        options=["Anxiety & Depression",
+                 "Age (Subgroups)", "Sex (Subgroups)", "Race (Subgroups)", "Education (Subgroups)"],
+        value="Anxiety & Depression",
+        clearable=False,
+    ),
+    dcc.Graph(id="sex-pyramid-graph",
+              style={'height': '650px', 'width': '100%'}),
+    html.P("Select Graph:"),
+    dcc.Dropdown(
+        id="sexBarTicker",
+        options=["Anxiety", "Depression"],
+        value="Anxiety",
+        clearable=False,
+    ),
+    dcc.Graph(id="sex-bar-graph",
+              style={'height': '650px', 'width': '100%'}),
 ])
+
+
+@app.callback(
+    Output("sex-bar-graph", "figure"),
+    Input("sexBarTicker", "value"))
+def display_sex_bar(sexBarTicker):
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(x=["Male", "Female"], y=[cdcAnxietySex["Male"].mean(), cdcAnxietySex["Female"].mean()],
+                         name="Anxiety", marker=dict(color='red', line=dict(color='#99ccff'))))
+    fig.add_trace(go.Bar(x=["Male", "Female"], y=[cdcDepressionSex["Male"].mean(), cdcDepressionSex["Female"].mean()],
+                         name="Depression", marker=dict(color='black', line=dict(color='pink'))))
+
+    fig.update_layout(title='CDC Anxiety & Depression Average (By Sex)',
+                      title_font_size=22, barmode='group',)
+
+    return fig
+
+
+@app.callback(
+    Output("sex-pyramid-graph", "figure"),
+    Input("sexBarTicker", "value"))
+def display_sex_pyramid(sexBarTicker):
+    if sexBarTicker == "Anxiety":
+        x = googleTrendsData["week"]
+        yMale = cdcAnxietySex["Male"] * -1
+        yFemale = cdcAnxietySex["Female"]
+    elif sexBarTicker == "Depression":
+        x = googleTrendsData["week"]
+        yMale = cdcDepressionSex["Male"] * -1
+        yFemale = cdcDepressionSex["Female"]
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(x=yMale, y=x, orientation='h',
+                         name="Male", marker=dict(color='#99ccff')))
+    fig.add_trace(go.Bar(x=yFemale, y=x, orientation='h',
+                         name="Female", marker=dict(color='pink')))
+
+    fig.update_layout(title='CDC By Sex Value ('+sexBarTicker+")",
+                      title_font_size=22, barmode='relative',
+                      bargap=0.0, bargroupgap=0,
+                      xaxis=dict(tickvals=[-1, -0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8, 1],
+                                 title='CDC Value',
+                                 title_font_size=14)
+                      )
+
+    return fig
+
+
+@app.callback(
+    Output("spider-chart", "figure"),
+    Input("spiderTicker", "value"))
+def display_spider_chart(spiderTicker):
+    if spiderTicker == "Anxiety & Depression":
+        theta = names
+        r1 = [cdcAnxietyUS["United States"].mean(), cdcAnxietyAge.mean()[1].mean(),
+              cdcAnxietySex.mean()[1].mean(), cdcAnxietyRace.mean()[1].mean(), cdcAnxietyEducation.mean()[1].mean()]
+        r2 = [cdcDepressionUS["United States"].mean(), cdcDepressionAge.mean()[1].mean(), cdcDepressionSex.mean()[
+            1].mean(), cdcDepressionRace.mean()[1].mean(), cdcDepressionEducation.mean()[1].mean()]
+        name1 = "Anxiety"
+        name2 = "Depression"
+        color1 = 'red'
+        color2 = 'black'
+        title = "Anxiety & Depression (Average of All Subgroups)"
+    elif spiderTicker == "Age (Subgroups)":
+        theta = cdcAnxietyAge.columns.tolist()
+        r1 = cdcAnxietyAge.mean()
+        r2 = cdcDepressionAge.mean()
+        name1 = "Anxiety"
+        name2 = "Depression"
+        color1 = 'red'
+        color2 = 'black'
+        title = "Anxiety & Depression (Age Subgroups)"
+    elif spiderTicker == "Sex (Subgroups)":
+        theta = cdcAnxietySex.columns.tolist()
+        r1 = cdcAnxietySex.mean()
+        r2 = cdcDepressionSex.mean()
+        name1 = "Anxiety"
+        name2 = "Depression"
+        color1 = 'red'
+        color2 = 'black'
+        title = "Anxiety & Depression (Sex Subgroups)"
+    elif spiderTicker == "Race (Subgroups)":
+        theta = cdcAnxietyRace.columns.tolist()
+        r1 = cdcAnxietyRace.mean()
+        r2 = cdcDepressionRace.mean()
+        name1 = "Anxiety"
+        name2 = "Depression"
+        color1 = 'red'
+        color2 = 'black'
+        title = "Anxiety & Depression (Race Subgroups)"
+    elif spiderTicker == "Education (Subgroups)":
+        theta = cdcAnxietyEducation.columns.tolist()
+        r1 = cdcAnxietyEducation.mean()
+        r2 = cdcDepressionEducation.mean()
+        name1 = "Anxiety"
+        name2 = "Depression"
+        color1 = 'red'
+        color2 = 'black'
+        title = "Anxiety & Depression (Education Subgroups)"
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatterpolar(
+        r=r1,
+        theta=theta,
+        fill='toself',
+        name=name1,
+        line=dict(color=color1),
+    ))
+    fig.add_trace(go.Scatterpolar(
+        r=r2,
+        theta=theta,
+        fill='toself',
+        name=name2,
+        line=dict(color=color2),
+    ))
+    fig.update_layout(
+        title=title,
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, 1]
+            )),
+        showlegend=True
+    )
+
+    return fig
 
 
 @app.callback(
