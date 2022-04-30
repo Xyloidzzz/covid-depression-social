@@ -1,0 +1,7 @@
+*.ipynb
+/Correlations/output
+/Correlations/*.py
+/Correlations/youtube
+/Correlations/google/original
+/SentimentAnalysis
+/TikTokFail
