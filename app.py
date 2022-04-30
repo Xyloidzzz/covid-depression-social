@@ -920,4 +920,5 @@ def display_correlation_info(correlation_ticker1, correlation_ticker2):
     return "Correlation: " + str(format(corr[0], '.6f')) + "... " + "P-value: " + str(format(corr[1], '.6f'))
 
 
-app.run_server()  # debug=True
+if __name__ == '__main__':
+    app.run_server()  # debug=True
