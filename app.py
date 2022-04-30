@@ -1,5 +1,4 @@
 import re
-from turtle import color, fillcolor
 from dash import Dash, dcc, html, Input, Output
 import plotly.graph_objects as go
 import plotly.express as px
