@@ -99,6 +99,8 @@ cdcDepressionState = cdcDepressionState / cdcDepressionState.max()
 
 #############################################START OF DASH############################################
 app = Dash(__name__)
+server = app.server
+app.title = "Group 2: CDC Anxiety and Depression"
 
 app.layout = html.Div([
     html.H1('Covid Anxiety & Depression Analysis'),
