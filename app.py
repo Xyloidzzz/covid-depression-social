@@ -392,7 +392,7 @@ def display_big_bar(x):
     dataAnx = pd.DataFrame(
         {'col': tempAnxCol, 'mean': tempAnxMean})
     dataDep = pd.DataFrame(
-        {'col': tempDepCol, 'mean': tempAnxMean})
+        {'col': tempDepCol, 'mean': tempDepMean})
 
     fig = go.Figure()
 
