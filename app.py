@@ -97,13 +97,13 @@ cdcDepressionRace = cdcDepressionRace / cdcDepressionRace.max()
 cdcDepressionEducation = cdcDepressionEducation / cdcDepressionEducation.max()
 cdcDepressionState = cdcDepressionState / cdcDepressionState.max()
 
+googleTrendsData.reset_index(inplace=True)
+googleTrendsData = googleTrendsData.drop(googleTrendsData.columns[0], axis=1)
+
 #############################################START OF DASH############################################
 app = Dash(__name__)
 server = app.server
 app.title = "Group 2: CDC Anxiety and Depression"
-
-# TODO
-# Map of State Data with Time Slider
 
 app.layout = html.Div([
     html.H1('Covid Anxiety & Depression Analysis'),
@@ -291,50 +291,126 @@ app.layout = html.Div([
         value="Anxiety",
         clearable=False,
     ),
-    # dcc.Graph(id="state-map",
-    #           style={'height': '650px', 'width': '100%'}),
-    # dcc.Dropdown(
-    #     id="stateMapTicker",
-    #     options=["Anxiety", "Depression"],
-    #     value="Anxiety",
-    #     clearable=False,
-    # ),
+    dcc.Graph(id="big-bar-graph",
+              style={'height': '650px', 'width': '100%'}),
+    dcc.Graph(id="state-map",
+              style={'height': '650px', 'width': '100%'}),
+    dcc.Dropdown(
+        id="stateMapTicker",
+        options=["Anxiety", "Depression"],
+        value="Anxiety",
+        clearable=False,
+    ),
 ])
 
 
-# @app.callback(
-#     Output("state-map", "figure"),
-#     Input("stateMapTicker", "value"))
-# def display_sex_bar(stateMapTicker):
+@app.callback(
+    Output("state-map", "figure"),
+    Input("stateMapTicker", "value"))
+def display_sex_bar(stateMapTicker):
 
-#     if stateMapTicker == 'Anxiety':
-#         color = 'ylorrd'
-#         raw = cdcAnxietyState
-#     elif stateMapTicker == 'Depression':
-#         color = 'greys'
-#         raw = cdcDepressionState
+    if stateMapTicker == 'Anxiety':
+        color = 'ylorrd'
+        raw = cdcAnxietyState
+    elif stateMapTicker == 'Depression':
+        color = 'greys'
+        raw = cdcDepressionState
 
-#     week = []
-#     state = []
-#     value = []
-#     # iterate over week
-#     for i in range(len(googleTrendsData['week'])):
-#         week.append(googleTrendsData['week'][i])
-#         for j in range(len(raw.columns)):
-#             state.append(raw.columns[j])
-#             value.append(raw[raw.columns[j]][i])
+    state_abbrev = [
+        'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA',
+        'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA',
+        'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY',
+        'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX',
+        'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+    ]
+    # convert raw.columns from state names to state abbreviations
+    raw.columns = state_abbrev
 
-#     data = pd.DataFrame({'week': week, 'state': state, 'value': value})
-#     data.reset_index(inplace=True)
-#     data = data.drop(data.columns[0], axis=1)
+    week = []
+    state = []
+    value = []
+    # iterate over week
+    for i in range(len(googleTrendsData['week'])):
+        for j in range(len(raw.columns)):
+            week.append(googleTrendsData['week'][i])
+            state.append(raw.columns[j])
+            value.append(raw[raw.columns[j]][i])
 
-#     fig = px.choropleth(data, locations="state", locationmode="USA-states", animation_frame="week",
-#                         color="value", color_continuous_scale=color, scope="usa")
+    data = pd.DataFrame({'week': week, 'state': state, 'value': value})
 
-#     return fig
+    fig = px.choropleth(data, locations="state", locationmode="USA-states", animation_frame="week",
+                        color="value", color_continuous_scale=color, scope="usa")
+
+    return fig
 
 
 @app.callback(
+    Output("big-bar-graph", "figure"),
+    Input("stateMapTicker", "value"))
+def display_big_bar(x):
+
+    tempAnxCol = []
+    for i in range(len(cdcAnxietyAge.columns.tolist())):
+        tempAnxCol.append(cdcAnxietyAge.columns.tolist()[i])
+    for i in range(len(cdcAnxietySex.columns.tolist())):
+        tempAnxCol.append(cdcAnxietySex.columns.tolist()[i])
+    for i in range(len(cdcAnxietyRace.columns.tolist())):
+        tempAnxCol.append(cdcAnxietyRace.columns.tolist()[i])
+    for i in range(len(cdcAnxietyEducation.columns.tolist())):
+        tempAnxCol.append(cdcAnxietyEducation.columns.tolist()[i])
+
+    tempDepCol = []
+    for i in range(len(cdcDepressionAge.columns.tolist())):
+        tempDepCol.append(cdcDepressionAge.columns.tolist()[i])
+    for i in range(len(cdcDepressionSex.columns.tolist())):
+        tempDepCol.append(cdcDepressionSex.columns.tolist()[i])
+    for i in range(len(cdcDepressionRace.columns.tolist())):
+        tempDepCol.append(cdcDepressionRace.columns.tolist()[i])
+    for i in range(len(cdcDepressionEducation.columns.tolist())):
+        tempDepCol.append(cdcDepressionEducation.columns.tolist()[i])
+
+    tempAnxMean = []
+    for i in range(len(cdcAnxietyAge.mean().tolist())):
+        tempAnxMean.append(cdcAnxietyAge.mean().tolist()[i])
+    for i in range(len(cdcAnxietySex.mean().tolist())):
+        tempAnxMean.append(cdcAnxietySex.mean().tolist()[i])
+    for i in range(len(cdcAnxietyRace.mean().tolist())):
+        tempAnxMean.append(cdcAnxietyRace.mean().tolist()[i])
+    for i in range(len(cdcAnxietyEducation.mean().tolist())):
+        tempAnxMean.append(cdcAnxietyEducation.mean().tolist()[i])
+
+    tempDepMean = []
+    for i in range(len(cdcDepressionAge.mean().tolist())):
+        tempDepMean.append(cdcDepressionAge.mean().tolist()[i])
+    for i in range(len(cdcDepressionSex.mean().tolist())):
+        tempDepMean.append(cdcDepressionSex.mean().tolist()[i])
+    for i in range(len(cdcDepressionRace.mean().tolist())):
+        tempDepMean.append(cdcDepressionRace.mean().tolist()[i])
+    for i in range(len(cdcDepressionEducation.mean().tolist())):
+        tempDepMean.append(cdcDepressionEducation.mean().tolist()[i])
+
+    dataAnx = pd.DataFrame(
+        {'col': tempAnxCol, 'mean': tempAnxMean})
+    dataDep = pd.DataFrame(
+        {'col': tempDepCol, 'mean': tempAnxMean})
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(x=dataAnx['col'], y=dataAnx['mean'],
+                         name='Anxiety',
+                         marker=dict(color=dataAnx["mean"], colorscale='ylorrd')))
+
+    fig.add_trace(go.Bar(x=dataDep['col'], y=dataDep['mean'],
+                         name='Depression',
+                         marker=dict(color=dataDep["mean"], colorscale='greys')))
+
+    fig.update_layout(title='CDC Anxiety & Depression Average (All Subgroups)',
+                      title_font_size=22, xaxis_title='All Subgroups', yaxis_title='Average CDC Value', barmode='group')
+
+    return fig
+
+
+@ app.callback(
     Output("age-bar-graph", "figure"),
     Input("ageBarTicker", "value"))
 def display_sex_bar(ageBarTicker):
@@ -351,7 +427,7 @@ def display_sex_bar(ageBarTicker):
             {'col': cdcDepressionAge.columns.tolist(), 'mean': cdcDepressionAge.mean()})
 
     fig = px.bar(data, x='col', y='mean',
-                         color='mean', color_continuous_scale=color)
+                 color='mean', color_continuous_scale=color)
 
     fig.update_layout(title='CDC ' + name + ' Average (By Age)',
                       title_font_size=22, xaxis_title='Age Level', yaxis_title='Average CDC Value',)
@@ -359,7 +435,7 @@ def display_sex_bar(ageBarTicker):
     return fig
 
 
-@app.callback(
+@ app.callback(
     Output("education-bar-graph", "figure"),
     Input("educationBarTicker", "value"))
 def display_sex_bar(educationBarTicker):
@@ -376,7 +452,7 @@ def display_sex_bar(educationBarTicker):
             {'col': cdcDepressionEducation.columns.tolist(), 'mean': cdcDepressionEducation.mean()})
 
     fig = px.bar(data, x='col', y='mean',
-                         color='mean', color_continuous_scale=color)
+                 color='mean', color_continuous_scale=color)
 
     fig.update_layout(title='CDC ' + name + ' Average (By Education)',
                       title_font_size=22, xaxis_title='Education Level', yaxis_title='Average CDC Value',)
@@ -513,7 +589,7 @@ def display_spider_chart(spiderTicker):
     return fig
 
 
-@app.callback(
+@ app.callback(
     Output("time-series-chart", "figure"),
     Input("ticker", "value"))
 def display_time_series(ticker):
@@ -643,7 +719,7 @@ def display_time_series(ticker):
     return fig
 
 
-@app.callback(
+@ app.callback(
     Output("correlation-chart", "figure"),
     Input("correlation-ticker1", "value"),
     Input("correlation-ticker2", "value"))
@@ -982,7 +1058,7 @@ def display_correlation_chart(correlation_ticker1, correlation_ticker2):
     return fig
 
 
-@app.callback(
+@ app.callback(
     Output("correlation-info", "children"),
     Input("correlation-ticker1", "value"),
     Input("correlation-ticker2", "value"))
