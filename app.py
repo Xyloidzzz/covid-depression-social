@@ -103,8 +103,6 @@ server = app.server
 app.title = "Group 2: CDC Anxiety and Depression"
 
 # TODO
-# Age Group Bar Graphs
-# Education Bar Graph
 # Map of State Data with Time Slider
 
 app.layout = html.Div([
@@ -255,6 +253,7 @@ app.layout = html.Div([
             style={'width': '100%', 'padding-left': '10px'}
         ),
     ], style={'display': 'flex', 'flex-direction': 'row', 'width': 'full', 'justify-content': 'center'}),
+    html.H2('Spider Charts of Groups and Subgroups Average CDC Values'),
     dcc.Graph(id="spider-chart",
               style={'height': '650px', 'width': '100%'}),
     html.P("Select Graph:"),
@@ -266,7 +265,7 @@ app.layout = html.Div([
         clearable=False,
     ),
     dcc.Graph(id="sex-pyramid-graph",
-              style={'height': '650px', 'width': '100%'}),
+              style={'height': '650px', 'width': '50%'}),
     html.P("Select Graph:"),
     dcc.Dropdown(
         id="sexBarTicker",
@@ -275,11 +274,117 @@ app.layout = html.Div([
         clearable=False,
     ),
     dcc.Graph(id="sex-bar-graph",
-              style={'height': '650px', 'width': '100%'}),
+              style={'height': '650px', 'width': '50%'}),
+    dcc.Graph(id="education-bar-graph",
+              style={'height': '650px', 'width': '50%'}),
+    dcc.Dropdown(
+        id="educationBarTicker",
+        options=["Anxiety", "Depression"],
+        value="Anxiety",
+        clearable=False,
+    ),
+    dcc.Graph(id="age-bar-graph",
+              style={'height': '650px', 'width': '50%'}),
+    dcc.Dropdown(
+        id="ageBarTicker",
+        options=["Anxiety", "Depression"],
+        value="Anxiety",
+        clearable=False,
+    ),
+    # dcc.Graph(id="state-map",
+    #           style={'height': '650px', 'width': '100%'}),
+    # dcc.Dropdown(
+    #     id="stateMapTicker",
+    #     options=["Anxiety", "Depression"],
+    #     value="Anxiety",
+    #     clearable=False,
+    # ),
 ])
 
 
+# @app.callback(
+#     Output("state-map", "figure"),
+#     Input("stateMapTicker", "value"))
+# def display_sex_bar(stateMapTicker):
+
+#     if stateMapTicker == 'Anxiety':
+#         color = 'ylorrd'
+#         raw = cdcAnxietyState
+#     elif stateMapTicker == 'Depression':
+#         color = 'greys'
+#         raw = cdcDepressionState
+
+#     week = []
+#     state = []
+#     value = []
+#     # iterate over week
+#     for i in range(len(googleTrendsData['week'])):
+#         week.append(googleTrendsData['week'][i])
+#         for j in range(len(raw.columns)):
+#             state.append(raw.columns[j])
+#             value.append(raw[raw.columns[j]][i])
+
+#     data = pd.DataFrame({'week': week, 'state': state, 'value': value})
+#     data.reset_index(inplace=True)
+#     data = data.drop(data.columns[0], axis=1)
+
+#     fig = px.choropleth(data, locations="state", locationmode="USA-states", animation_frame="week",
+#                         color="value", color_continuous_scale=color, scope="usa")
+
+#     return fig
+
+
 @app.callback(
+    Output("age-bar-graph", "figure"),
+    Input("ageBarTicker", "value"))
+def display_sex_bar(ageBarTicker):
+
+    if ageBarTicker == 'Anxiety':
+        name = 'Anxiety'
+        color = 'ylorrd'
+        data = pd.DataFrame(
+            {'col': cdcAnxietyAge.columns.tolist(), 'mean': cdcAnxietyAge.mean()})
+    elif ageBarTicker == 'Depression':
+        name = 'Depression'
+        color = 'greys'
+        data = pd.DataFrame(
+            {'col': cdcDepressionAge.columns.tolist(), 'mean': cdcDepressionAge.mean()})
+
+    fig = px.bar(data, x='col', y='mean',
+                         color='mean', color_continuous_scale=color)
+
+    fig.update_layout(title='CDC ' + name + ' Average (By Age)',
+                      title_font_size=22, xaxis_title='Age Level', yaxis_title='Average CDC Value',)
+
+    return fig
+
+
+@app.callback(
+    Output("education-bar-graph", "figure"),
+    Input("educationBarTicker", "value"))
+def display_sex_bar(educationBarTicker):
+
+    if educationBarTicker == 'Anxiety':
+        name = 'Anxiety'
+        color = 'ylorrd'
+        data = pd.DataFrame(
+            {'col': cdcAnxietyEducation.columns.tolist(), 'mean': cdcAnxietyEducation.mean()})
+    elif educationBarTicker == 'Depression':
+        name = 'Depression'
+        color = 'greys'
+        data = pd.DataFrame(
+            {'col': cdcDepressionEducation.columns.tolist(), 'mean': cdcDepressionEducation.mean()})
+
+    fig = px.bar(data, x='col', y='mean',
+                         color='mean', color_continuous_scale=color)
+
+    fig.update_layout(title='CDC ' + name + ' Average (By Education)',
+                      title_font_size=22, xaxis_title='Education Level', yaxis_title='Average CDC Value',)
+
+    return fig
+
+
+@ app.callback(
     Output("sex-bar-graph", "figure"),
     Input("sexBarTicker", "value"))
 def display_sex_bar(sexBarTicker):
@@ -296,7 +401,7 @@ def display_sex_bar(sexBarTicker):
     return fig
 
 
-@app.callback(
+@ app.callback(
     Output("sex-pyramid-graph", "figure"),
     Input("sexBarTicker", "value"))
 def display_sex_pyramid(sexBarTicker):
@@ -327,7 +432,7 @@ def display_sex_pyramid(sexBarTicker):
     return fig
 
 
-@app.callback(
+@ app.callback(
     Output("spider-chart", "figure"),
     Input("spiderTicker", "value"))
 def display_spider_chart(spiderTicker):
@@ -548,6 +653,7 @@ def display_correlation_chart(correlation_ticker1, correlation_ticker2):
     if correlation_ticker1 == "CDC Anxiety US":
         x = cdcAnxietyUS['United States']
         xTitle = 'CDC Value'
+        # scale = 'oranges'
     elif correlation_ticker1 == "CDC Anxiety Age (18 - 29 years)":
         x = cdcAnxietyAge['18 - 29 years']
         xTitle = 'CDC Value'
@@ -848,11 +954,25 @@ def display_correlation_chart(correlation_ticker1, correlation_ticker2):
         y = googleTrendsData['suicidalThoughts']
         yTitle = 'Google Trends Value'
 
+    # # iterate over x and y and make a new dataframe with each correlation
+    # corr = pd.DataFrame(googleTrendsData['week'])
+    # corr.reset_index(inplace=True)
+    # corr = corr.drop(corr.columns[0], axis=1)
+    # temp = []
+    # for i in range(len(x)):
+    #     temp.append(pearsonr(x[i], y[i])[0])
+    # corr['corr'] = temp
+    # corr.reset_index(inplace=True)
+    # corr = corr.drop(corr.columns[0], axis=1)
+
     # Google Trends Covid VS Google Trends Anxiety
     fig = px.scatter(x=x, y=y,
                      trendline="ols",
                      trendline_color_override="red",
                      size_max=20,
+                     #  color=corr,
+                     #  color_continuous_scale=scale,
+                     #  hover_name=corr['week'],
                      hover_name=googleTrendsData['week'],
                      labels={x.name: xTitle, y.name: yTitle},
                      title=correlation_ticker1 + " VS " + correlation_ticker2,)
